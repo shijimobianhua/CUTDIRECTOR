@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CUTDIRECTOR · AI 剪辑导演</title><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="stylesheet" href="workbench.css"><script src="workbench.js" defer></script><script src="agent.js" defer></script></head>
+<body><a class="skip" href="#workspace">跳至视频</a><div class="app-shell">
+<aside class="rail" aria-label="视频导航"><a class="identity" href="#overview"><img class="brand-mark" src="icon.svg" width="32" height="32" alt=""><span><strong>CUTDIRECTOR</strong><small>AI 剪辑导演</small></span></a><p class="eyebrow">创作空间</p><nav aria-label="工作区章节"><a class="nav-link" href="#overview">01　概览</a><a class="nav-link" href="#workspace">02　视频</a><a class="nav-link" href="#transcript">03　字幕</a><a class="nav-link" href="#deliveries">04　导出</a></nav><div class="rail-projects"><label for="projects">我的视频</label><select id="projects"><option value="">正在加载…</option></select><div id="projectList" class="project-list"></div></div><div class="rail-foot"><button id="advancedOpen">高级 / 调试</button><small>媒体保留在本机</small></div></aside>
+<main><header class="topbar"><div><p class="eyebrow">从一段视频，到一部作品。</p><h1 id="projectName">你的下一部作品，从这里开始。</h1></div><div class="header-actions"><button id="uploadOpen">上传视频</button><button id="agentOpen" class="primary">和 Agent 对话</button><button id="export" data-project>导出视频 ↗</button></div></header>
+<div class="save-line"><span class="local-dot"></span><div id="status" role="status" aria-live="polite">选择一段视频，开始创作</div></div><div id="error" role="alert" hidden></div>
+<section id="overview" class="overview"><div class="intro"><p class="eyebrow">三步完成你的作品</p><h2>上传。说出想法。<br>让画面成形。</h2><p>上传视频 → 和 Agent 对话 → 预览与导出</p></div><div class="overview-grid"><article class="metric"><span>视频素材</span><strong id="mediaCount">—</strong><span>已上传</span></article><article class="metric"><span>视频片段</span><strong id="clipCount">—</strong><span id="durationInfo">等待上传</span></article><article class="metric"><span>字幕</span><strong id="captionCount">—</strong><span id="selectionInfo">点击片段查看画面</span></article></div></section>
+<section id="workspace"><div class="chapter"><h2>画面预览</h2><small>专注每一个镜头</small></div><div id="dropZone" class="upload-zone" tabindex="0" role="button" aria-label="上传视频，支持拖放">＋ 拖入视频，或点击选择文件 <small>自动创建视频，无需设置</small><input id="videoFile" type="file" accept="video/*,.mkv,.mov,.avi" hidden></div><section class="panel stage" aria-label="播放器与片段"><div class="sectionHead"><h3>视频</h3><span id="playInfo">选择片段播放</span></div><div class="player-wrap"><video id="player" controls preload="metadata" aria-label="视频播放器"></video><p id="playerEmpty" class="player-empty">你的画面，即将登场<small>上传一段视频，开始剪辑</small></p></div><div class="sectionHead timeline-head"><h3>片段</h3><span id="clock">00:00.000</span></div><div id="timeline" aria-label="视频片段"></div><div id="segments" class="clip-list"></div></section></section>
+<section id="transcript" class="panel transcript"><div class="sectionHead"><h2>字幕</h2><button id="autoCaptions" data-project>识别并添加字幕</button></div><p class="hint">直接修改文字并保存，或告诉 Agent 你想如何调整。</p><div id="captions"></div></section>
+<section id="deliveries" class="bottom"><div class="chapter"><h2>导出视频</h2><small>预览满意后，保存你的作品</small></div><div id="jobs"></div></section><footer class="page-foot">CUTDIRECTOR · 每一帧，都值得推敲。</footer></main></div>
+<dialog id="playbackDialog" aria-labelledby="playbackTitle">
+  <div class="sectionHead">
+    <h2 id="playbackTitle">视频预览</h2>
+    <button id="playbackBack" type="button" autofocus>返回剪辑</button>
+  </div>
+  <video id="playbackVideo" controls playsinline preload="metadata" aria-label="预览播放器"></video>
+  <p id="playbackError" role="status" hidden>这个视频暂时无法播放。可以返回剪辑，再重新生成预览。</p>
+</dialog>
+<dialog id="advancedDialog" class="drawer" aria-labelledby="advancedTitle"><div class="sectionHead"><h2 id="advancedTitle">高级 / 调试</h2><button id="advancedClose">关闭 ×</button></div><p id="revision"></p><button id="refresh">重新读取</button><button id="preview" data-project>生成预览</button><button id="newProject">通过路径导入</button><button id="importOpen">导入本地视频路径</button><h3>素材信息</h3><div id="media"></div><div id="trim"></div><h3>识别与字幕导入</h3><label>素材<select id="asset" data-project></select></label><button id="asr" data-project>运行 ASR</button><button id="generate" data-project>从转写生成字幕</button><p id="provider"></p><label>SRT 文件<input id="srtFile" type="file" accept=".srt,text/plain"></label><label>SRT 内容<textarea id="srt" rows="5"></textarea></label><button id="srtImport" data-project>导入字幕</button><div id="transcripts"></div><h3>历史与差异</h3><div id="history"></div><pre id="diff"></pre><pre id="debugError"></pre><h3>导出诊断与全部产物</h3><pre id="debugJobs"></pre><div id="debugArtifacts"></div><h3>审阅反馈</h3><form id="feedback"><label>意见<input name="request" required></label><label>结论<select name="decision"><option value="pending">待审阅</option><option value="accepted">接受</option><option value="rejected">拒绝</option><option value="revised">需要修改</option></select></label><label><input name="confirmed" type="checkbox">已确认偏好</label><button data-project>保存反馈</button></form><div id="feedbackList"></div></dialog>
+<dialog id="importDialog"><form id="importForm"><h2>从本地路径导入</h2><label>工程 ID<input name="projectId" required pattern="[A-Za-z][A-Za-z0-9_-]{0,95}"></label><label>名称<input name="name"></label><label>本地视频路径<input name="path" required></label><button type="button" id="importClose">取消</button><button>创建并导入</button><p id="importStatus" role="status"></p></form></dialog>
+<dialog id="agentDialog" class="drawer" aria-labelledby="agentTitle">
+  <div class="sectionHead"><h2 id="agentTitle">剪辑导演</h2><button id="agentClose">返回视频 ×</button></div>
+  <div class="agentChatNav">
+    <label>当前对话<select id="agentChats"></select></label>
+    <button id="agentNewChat" type="button">新对话</button>
+  </div>
+  <p id="agentContext" class="agent-context"></p>
+  <p id="agentStatus" role="status"></p><p id="agentError" role="alert"></p>
+  <button id="agentOlder" type="button" hidden>查看更早消息</button>
+  <div id="agentResult" aria-label="对话记录"></div><div id="agentActions"></div>
+  <form id="agentForm">
+    <label>想怎么剪？<textarea id="agentPrompt" rows="3" maxlength="2000" required placeholder="例如：剪掉开头两秒。你也可以问我怎么开始。"></textarea></label>
+    <button id="agentSend" disabled>发送</button>
+    <details><summary>剪辑与模型设置</summary>
+      <label>模型<select id="agentModel"></select></label>
+      <button id="agentManageModels" type="button">添加或管理模型</button>
+      <label><input id="agentProposalOnly" type="checkbox">只给方案</label>
+      <label>目标秒数<input id="agentSeconds" type="number" min="0.001" max="86400" step="any"></label>
+      <label>必须保留（每行一项）<textarea id="agentKeep" rows="2" maxlength="1200"></textarea></label>
+      <label><input id="agentFrame" type="checkbox">允许向所选模型发送已生成的关键帧</label>
+      <label id="agentDelegateOption" hidden><input id="agentDelegate" type="checkbox">允许 DSH 分析当前片段的证据</label>
+    </details>
+  </form>
+  <details><summary>学习与偏好</summary><p>在高级面板保存已接受且明确确认的反馈后，可在这里启用。</p><div id="agentMemory"></div></details>
+</dialog>
+<dialog id="modelDialog" class="drawer" aria-labelledby="modelTitle">
+  <div class="sectionHead"><h2 id="modelTitle">模型设置</h2><button id="modelClose" type="button">关闭 ×</button></div>
+  <div id="modelSaved"></div>
+  <button id="modelNew" type="button">添加新模型</button>
+  <form id="modelForm">
+    <label>厂商<select id="modelKind"><option value="deepseek">DeepSeek 官方</option><option value="compatible">OpenAI 兼容接口</option><option value="local">本机免密服务</option></select></label>
+    <p id="modelKeyHelp"><a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener noreferrer">打开 DeepSeek 获取 API Key ↗</a></p>
+    <label id="modelUrlRow">接口地址<input id="modelUrl" type="url" maxlength="400" placeholder="https://你的接口地址/v1"></label>
+    <label id="modelKeyRow">API Key<input id="modelKey" type="password" autocomplete="off" maxlength="4096" placeholder="在这里粘贴 API Key"></label>
+    <button id="modelDiscover" type="button">获取模型列表</button>
+    <label>模型 ID<input id="modelName" list="modelOptions" maxlength="200" required placeholder="从列表选择，或手动输入"></label>
+    <datalist id="modelOptions"></datalist>
+    <label><input id="modelVision" type="checkbox">此模型支持图像输入</label>
+    <p id="modelStatus" role="status"></p><p id="modelError" role="alert"></p>
+    <button id="modelSave" type="submit">测试并保存</button>
+  </form>
+</dialog></body></html>

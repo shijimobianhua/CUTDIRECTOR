@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 2,
+  "manifest": {
+    "schemaVersion": 2,
+    "id": "user.mcp-http",
+    "version": "1.0.0",
+    "title": "MCP 远程工具",
+    "transport": "mcp-http",
+    "capabilities": [
+      "text-advice"
+    ],
+    "permissions": [
+      "project-read",
+      "media-read",
+      "media-upload",
+      "network-read",
+      "paid-generation"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "required": [
+        "prompt"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12000
+        }
+      }
+    },
+    "outputSchema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "limits": {
+      "images": 4,
+      "audio": 0,
+      "video": 0,
+      "maxSeconds": 15,
+      "ratios": [
+        "16:9",
+        "9:16",
+        "1:1"
+      ]
+    },
+    "cost": "unknown",
+    "lifecycle": {
+      "submit": true,
+      "poll": false,
+      "cancel": false,
+      "idempotent": false
+    },
+    "source": "用户自行配置",
+    "license": "用户配置；服务遵循厂商条款",
+    "hostRange": "3"
+  },
+  "config": {
+    "baseUrl": "https://",
+    "toolName": "",
+    "trusted": false
+  },
+  "credentialsRequired": true
+}

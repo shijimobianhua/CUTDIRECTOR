@@ -1,0 +1,372 @@
+{
+  "bj-1793785735350-j5w229": {
+    "businessJobId": "bj-1793785735350-j5w229",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "success",
+    "state": "needsReconcile",
+    "progress": "needsReconcile after simulated restart",
+    "output": "",
+    "result": null,
+    "attempts": [
+      {
+        "attemptId": "at-1793785735350-ubc0oo",
+        "runtimeJobId": "bash-31599a682ae54ddf",
+        "state": "running",
+        "startedAt": "2026-11-04T09:48:55.353Z",
+        "finishedAt": null
+      }
+    ],
+    "createdAt": "2026-11-04T09:48:55.350Z",
+    "updatedAt": "2026-11-04T09:54:03.377Z",
+    "runtimeStatus": "needsReconcile"
+  },
+  "bj-1793785836150-gybgxk": {
+    "businessJobId": "bj-1793785836150-gybgxk",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "success",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "succeeded",
+    "progress": "succeeded",
+    "output": "started success\nverifying\nDONE ok\n",
+    "result": "ok",
+    "runtimeJobId": "bash-8053074e75534e29",
+    "runtimeStatus": "registered",
+    "attempts": [
+      {
+        "attemptId": "at-1793785836150-cv7ts0",
+        "runtimeJobId": "bash-8053074e75534e29",
+        "state": "succeeded",
+        "startedAt": "2026-11-04T09:50:36.152Z",
+        "finishedAt": "2026-11-04T09:50:39.571Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:50:36.150Z",
+    "updatedAt": "2026-11-04T09:50:39.571Z"
+  },
+  "bj-1793785848278-tonh71": {
+    "businessJobId": "bj-1793785848278-tonh71",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "failure",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "failed",
+    "progress": "failed",
+    "output": "started failure\nFAILED injected failure\n",
+    "result": "injected failure",
+    "runtimeJobId": "bash-b9a7e7faf36e4f01",
+    "runtimeStatus": "registered",
+    "attempts": [
+      {
+        "attemptId": "at-1793785848278-voua2r",
+        "runtimeJobId": "bash-b9a7e7faf36e4f01",
+        "state": "failed",
+        "startedAt": "2026-11-04T09:50:48.279Z",
+        "finishedAt": "2026-11-04T09:50:49.285Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:50:48.278Z",
+    "updatedAt": "2026-11-04T09:50:49.285Z"
+  },
+  "bj-1793785855270-77knbm": {
+    "businessJobId": "bj-1793785855270-77knbm",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "slow",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "canceled",
+    "progress": "canceled",
+    "output": "started slow\ncancel requested: user canceled from M0-T4 demo\n",
+    "result": null,
+    "runtimeJobId": "bash-559716e7dedd4fc4",
+    "runtimeStatus": "registered",
+    "attempts": [
+      {
+        "attemptId": "at-1793785855270-nbeohd",
+        "runtimeJobId": "bash-559716e7dedd4fc4",
+        "state": "canceled",
+        "startedAt": "2026-11-04T09:50:55.272Z",
+        "finishedAt": "2026-11-04T09:51:00.134Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:50:55.270Z",
+    "updatedAt": "2026-11-04T09:51:00.134Z"
+  },
+  "bj-1793785863391-ypsgwk": {
+    "businessJobId": "bj-1793785863391-ypsgwk",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "slow",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "canceled",
+    "progress": "canceled",
+    "output": "started slow\ncancel requested: simulated restart\n",
+    "result": null,
+    "runtimeJobId": "bash-63d9213425744ae1",
+    "runtimeStatus": "registered",
+    "attempts": [
+      {
+        "attemptId": "at-1793785863391-tlsgzj",
+        "runtimeJobId": "bash-63d9213425744ae1",
+        "state": "canceled",
+        "startedAt": "2026-11-04T09:51:03.393Z",
+        "finishedAt": "2026-11-04T09:51:09.305Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:51:03.391Z",
+    "updatedAt": "2026-11-04T09:51:09.305Z"
+  },
+  "bj-1793785888457-3xq3r7": {
+    "businessJobId": "bj-1793785888457-3xq3r7",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "slow",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "failed",
+    "progress": "reconciled: failed",
+    "output": "started slow\n",
+    "result": "Simulated restart before terminal result; DSH job killed; no artifact to verify.",
+    "runtimeJobId": "bash-9ede4337e7d44239",
+    "runtimeStatus": "needsReconcile",
+    "attempts": [
+      {
+        "attemptId": "at-1793785888457-qolot7",
+        "runtimeJobId": "bash-9ede4337e7d44239",
+        "state": "failed",
+        "startedAt": "2026-11-04T09:51:28.458Z",
+        "finishedAt": "2026-11-04T09:51:37.057Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:51:28.457Z",
+    "updatedAt": "2026-11-04T09:51:37.057Z"
+  },
+  "bj-1793785904446-kzj177": {
+    "businessJobId": "bj-1793785904446-kzj177",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "success",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "succeeded",
+    "progress": "succeeded",
+    "output": "started success\nverifying\nDONE ok\n",
+    "result": "ok",
+    "runtimeJobId": "bash-ef3ba468b8e34e8e",
+    "runtimeStatus": "registered",
+    "attempts": [
+      {
+        "attemptId": "at-1793785904446-9atn8v",
+        "runtimeJobId": "bash-ef3ba468b8e34e8e",
+        "state": "succeeded",
+        "startedAt": "2026-11-04T09:51:44.447Z",
+        "finishedAt": "2026-11-04T09:51:47.872Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:51:44.446Z",
+    "updatedAt": "2026-11-04T09:51:47.872Z"
+  },
+  "bj-1793785926268-kci8fi": {
+    "businessJobId": "bj-1793785926268-kci8fi",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "success",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "succeeded",
+    "progress": "succeeded",
+    "output": "started success\nverifying\nDONE ok\n",
+    "result": "ok",
+    "runtimeJobId": "bash-436f667215234488",
+    "runtimeStatus": "registered",
+    "attempts": [
+      {
+        "attemptId": "at-1793785926268-64d3d5",
+        "runtimeJobId": "bash-436f667215234488",
+        "state": "succeeded",
+        "startedAt": "2026-11-04T09:52:06.269Z",
+        "finishedAt": "2026-11-04T09:52:11.291Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:52:06.268Z",
+    "updatedAt": "2026-11-04T09:52:11.291Z"
+  },
+  "bj-1793785982881-4yfbki": {
+    "businessJobId": "bj-1793785982881-4yfbki",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "success",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "succeeded",
+    "progress": "succeeded",
+    "output": "started success\nverifying\nDONE ok\n",
+    "result": "ok",
+    "runtimeJobId": "bash-d6a8c163cc68451b",
+    "runtimeStatus": "registered",
+    "attempts": [
+      {
+        "attemptId": "at-1793785982881-8e8w7c",
+        "runtimeJobId": "bash-d6a8c163cc68451b",
+        "state": "succeeded",
+        "startedAt": "2026-11-04T09:53:02.882Z",
+        "finishedAt": "2026-11-04T09:53:07.901Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:53:02.881Z",
+    "updatedAt": "2026-11-04T09:53:07.901Z"
+  },
+  "bj-1793786010513-vytvi3": {
+    "businessJobId": "bj-1793786010513-vytvi3",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "success",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "succeeded",
+    "progress": "succeeded",
+    "output": "started success\nverifying\nDONE ok\n",
+    "result": "ok",
+    "history": [
+      {
+        "state": "queued",
+        "at": "2026-11-04T09:53:30.513Z"
+      },
+      {
+        "state": "running",
+        "at": "2026-11-04T09:53:30.514Z"
+      },
+      {
+        "state": "verifying",
+        "at": "2026-11-04T09:53:32.023Z"
+      },
+      {
+        "state": "succeeded",
+        "at": "2026-11-04T09:53:35.039Z"
+      }
+    ],
+    "runtimeJobId": "bash-eb89825617c8436f",
+    "runtimeStatus": "registered",
+    "attempts": [
+      {
+        "attemptId": "at-1793786010513-n6c7a3",
+        "runtimeJobId": "bash-eb89825617c8436f",
+        "state": "succeeded",
+        "startedAt": "2026-11-04T09:53:30.514Z",
+        "finishedAt": "2026-11-04T09:53:35.039Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:53:30.513Z",
+    "updatedAt": "2026-11-04T09:53:35.039Z"
+  },
+  "bj-1793786022731-asyvxw": {
+    "businessJobId": "bj-1793786022731-asyvxw",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "failure",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "failed",
+    "progress": "failed",
+    "output": "started failure\nFAILED injected failure\n",
+    "result": "injected failure",
+    "history": [
+      {
+        "state": "queued",
+        "at": "2026-11-04T09:53:42.731Z"
+      },
+      {
+        "state": "running",
+        "at": "2026-11-04T09:53:42.732Z"
+      },
+      {
+        "state": "failed",
+        "at": "2026-11-04T09:53:43.541Z"
+      }
+    ],
+    "runtimeJobId": "bash-5b221e0cdb8744c8",
+    "runtimeStatus": "registered",
+    "attempts": [
+      {
+        "attemptId": "at-1793786022731-46pibk",
+        "runtimeJobId": "bash-5b221e0cdb8744c8",
+        "state": "failed",
+        "startedAt": "2026-11-04T09:53:42.732Z",
+        "finishedAt": "2026-11-04T09:53:43.541Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:53:42.731Z",
+    "updatedAt": "2026-11-04T09:53:43.541Z"
+  },
+  "bj-1793786030482-ors0x8": {
+    "businessJobId": "bj-1793786030482-ors0x8",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "slow",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "canceled",
+    "progress": "canceled",
+    "output": "started slow\ncancel requested: user canceled from M0-T4 demo\n",
+    "result": null,
+    "history": [
+      {
+        "state": "queued",
+        "at": "2026-11-04T09:53:50.482Z"
+      },
+      {
+        "state": "running",
+        "at": "2026-11-04T09:53:50.483Z"
+      },
+      {
+        "state": "cancelRequested",
+        "at": "2026-11-04T09:53:55.617Z"
+      },
+      {
+        "state": "canceled",
+        "at": "2026-11-04T09:53:55.932Z"
+      }
+    ],
+    "runtimeJobId": "bash-fa6049f8da57461c",
+    "runtimeStatus": "registered",
+    "attempts": [
+      {
+        "attemptId": "at-1793786030482-fwgwmm",
+        "runtimeJobId": "bash-fa6049f8da57461c",
+        "state": "canceled",
+        "startedAt": "2026-11-04T09:53:50.483Z",
+        "finishedAt": "2026-11-04T09:53:55.932Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:53:50.482Z",
+    "updatedAt": "2026-11-04T09:53:55.932Z"
+  },
+  "bj-1793786038723-tsa3s0": {
+    "businessJobId": "bj-1793786038723-tsa3s0",
+    "kind": "demo-render",
+    "projectId": "P",
+    "scenario": "slow",
+    "owner": "session-1d0cb615-4037-49c2-a78e-234fa8fbf20b",
+    "state": "failed",
+    "progress": "reconciled: failed",
+    "output": "started slow\n",
+    "result": "Simulated restart before terminal result; DSH job killed; no artifact.",
+    "history": [
+      {
+        "state": "queued",
+        "at": "2026-11-04T09:53:58.723Z"
+      },
+      {
+        "state": "running",
+        "at": "2026-11-04T09:53:58.724Z"
+      }
+    ],
+    "runtimeJobId": "bash-8e85562c0e444a34",
+    "runtimeStatus": "needsReconcile",
+    "attempts": [
+      {
+        "attemptId": "at-1793786038723-juhwuh",
+        "runtimeJobId": "bash-8e85562c0e444a34",
+        "state": "failed",
+        "startedAt": "2026-11-04T09:53:58.724Z",
+        "finishedAt": "2026-11-04T09:54:06.368Z"
+      }
+    ],
+    "createdAt": "2026-11-04T09:53:58.723Z",
+    "updatedAt": "2026-11-04T09:54:06.368Z"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "fixtureVersion": 1,
+  "provenance": {"kind": "synthetic-test", "source": "Deterministic second scenario: command routing/scope protection only, no LLM or ASR quality claim"},
+  "scenario": "Selected ranges combine across two instances; switch project and method; missing speech capability preserves protected edits",
+  "selection": ["S2", "S"],
+  "protectedCaptionId": "C",
+  "expectedOrder": ["S2", "S"],
+  "unsupported": "segment.split"
+}

@@ -1,0 +1,26 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict'),{mkdtempSync,rmSync,mkdirSync,writeFileSync}=require('node:fs'),{tmpdir}=require('node:os'),{join}=require('node:path'),{pathToFileURL}=require('node:url'),{createServer}=require('node:http'),{once}=require('node:events'),{createHash}=require('node:crypto');
+const {build}=require('../tools/package-v3.cjs'),{openStore}=require('../src/v3/service/store.cjs');
+test('Desktop authenticated forwarding works without browser headers or plugin cookies and does not admit forged origins',async t=>{
+ const root=mkdtempSync(join(tmpdir(),'cd-desktop-')),data=join(root,'data'),store=openStore(data);
+ const project=store.mutate('project',{commandId:'p',title:'Desktop',kind:'idea'}),bytes=Buffer.from('owned preview'),digest=createHash('sha256').update(bytes).digest('hex');
+ mkdirSync(join(data,'media'),{recursive:true});
+ const asset=store.mutate('asset',{commandId:'asset',projectId:project.id,digest,name:'fixture.mp4',size:bytes.length,durationUs:1000000,width:160,height:90,contentType:'video/mp4'},()=>writeFileSync(join(data,'media',digest),bytes));store.close();
+ const pkg=build(join(root,'plugin'),data),{apply}=await import(pathToFileURL(join(pkg,'host/index.js')).href);let route,dispose;
+ apply({webServer:{register(value){route=value.handler;return ()=>{};}},effect(fn){dispose=fn();},get(name){if(name==='connection')return {requestRejection:req=>req.headers.cookie==='HostOwner=valid'?undefined:401};}},{dataRoot:data});
+ const server=createServer(route);server.listen(0,'127.0.0.1');await once(server,'listening');
+ t.after(async()=>{dispose();server.closeAllConnections();await new Promise(r=>server.close(r));for(let i=0;i<20;i++){try{rmSync(root,{recursive:true,force:true});break;}catch{await new Promise(r=>setTimeout(r,100));}}});
+ const origin='http://127.0.0.1:'+server.address().port;
+ const get=(path,headers={})=>fetch(origin+'/video-agent/'+path,{headers});
+ assert.equal((await get('',{'sec-fetch-dest':'iframe',referer:'dsh-app://app/',cookie:'HostOwner=forged'})).status,403);
+ const page=await get('',{'sec-fetch-dest':'iframe',referer:'dsh-app://app/',cookie:'HostOwner=valid'});assert.equal(page.status,200);
+ assert.equal((await get('',{cookie:'HostOwner=valid'})).status,200);
+ assert.equal((await get('',{'sec-fetch-dest':'empty',cookie:'HostOwner=valid'})).status,200);
+ const html=await page.text(),token=html.match(/name="cutdirector-session" content="([^"]+)"/)[1];
+ assert.equal((await get('v3/bootstrap',{cookie:'HostOwner=valid','x-cutdirector-session':token})).status,200);
+ assert.equal((await get('v3/bootstrap',{cookie:'HostOwner=forged','x-cutdirector-session':token})).status,403);
+ assert.equal((await get('v3/bootstrap',{cookie:'HostOwner=valid','x-cutdirector-session':token,origin:'https://evil.example'})).status,403);
+ const media=await get('v3/projects/'+project.id+'/assets/'+asset.id+'/content',{cookie:'HostOwner=valid'});assert.equal(media.status,200);assert.equal(await media.text(),'owned preview');
+ const write=await fetch(origin+'/video-agent/v3/ideas',{method:'POST',headers:{cookie:'HostOwner=valid','x-cutdirector-session':token,'content-type':'application/json'},body:JSON.stringify({commandId:'idea',text:'Desktop write'})});assert.equal(write.status,200);
+ assert.equal((await get('',{'sec-fetch-dest':'document',cookie:'HostOwner=valid'})).status,403);
+});

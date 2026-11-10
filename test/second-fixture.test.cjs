@@ -1,0 +1,14 @@
+const {test}=require('node:test'),a=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');const {fixture,temp,command}=require('./helpers.cjs'),{ProjectStore}=require('../src/core/store.cjs'),{createServer}=require('../src/server.cjs'),{hash}=require('../src/core/util.cjs');
+test('second synthetic fixture: selection/range combination, project switch, missing capability, protected actual diff',async()=>{
+ const file=path.join(__dirname,'fixtures/M3-scope.json'),record=JSON.parse(fs.readFileSync(file)),fixtureHash=hash(fs.readFileSync(file));a.equal(record.provenance.kind,'synthetic-test');a.equal(fixtureHash.length,64);
+ const s=new ProjectStore(temp()),p=fixture(),q=fixture();q.projectId='Q';q.name='Second project';s.create(p);s.create(q);s.apply(command());
+ const server=createServer(s);await new Promise(r=>server.listen(0,'127.0.0.1',r));const tools=[],routes=[];try{
+ const {apply}=await import('../src/host/index.js');apply({tools:{register:t=>(tools.push(t),()=>{})},skills:{register:()=>()=>{}},webServer:{register:r=>(routes.push(r),()=>{})},effect:f=>f()},{adapterUrl:'http://127.0.0.1:'+server.address().port});const tool=n=>tools.find(t=>t.name===n);
+ await fetch('http://127.0.0.1:'+server.address().port+'/selection',{method:'POST',body:JSON.stringify({projectId:'P',segmentIds:record.selection})});const before=await tool('video_project_read').execute({},{});a.deepEqual(before.selection,record.selection);
+ const changed=await tool('video_project_apply').execute({baseRevision:1,commandId:'combined',op:'batch',target:'P',params:{commands:[{op:'segment.reorder',target:'V1',params:{segmentIds:record.expectedOrder}},{op:'segment.trim',target:'S2',params:{inFrame:121,outFrame:240}}]}},{});
+ const after=s.read('P');a.deepEqual(after.captions,before.project.captions);a.deepEqual(after.tracks[0].segmentIds,record.expectedOrder);a.ok(changed.diff.some(d=>d.key==='clips'));a.ok(!changed.diff.some(d=>d.key==='captions'));a.equal(after.captions.find(c=>c.id===record.protectedCaptionId).text,'纠正');
+ await a.rejects(()=>tool('video_project_apply').execute({baseRevision:2,commandId:'unsupported',op:record.unsupported,target:'S',params:{}},{}),{code:'VALIDATION_ERROR'});a.equal(s.read('P').revision,2);
+ await a.rejects(()=>tool('video_project_apply').execute({baseRevision:2,commandId:'protected',op:'segment.trim',target:'S',params:{inFrame:20,outFrame:120}},{}),{code:'PROTECTED_CONTENT'});
+ await tool('video_project_open').execute({projectId:'Q'},{});a.equal((await tool('video_project_read').execute({},{})).project.projectId,'Q');a.equal(s.read('Q').revision,0);await tool('video_project_open').execute({projectId:'P'},{});a.equal((await tool('video_project_read').execute({},{})).project.revision,2);
+ }finally{await new Promise(r=>server.close(r));s.close();}
+});

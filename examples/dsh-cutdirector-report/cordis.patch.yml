@@ -1,0 +1,3 @@
+- insert:
+    - id: cutdirector-report
+      name: '@local/cutdirector-report'

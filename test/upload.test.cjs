@@ -1,0 +1,15 @@
+﻿const {test}=require('node:test'),a=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const {temp}=require('./helpers.cjs'),{ProjectStore}=require('../src/core/store.cjs'),{createServer}=require('../src/server.cjs'),{Jobs}=require('../src/core/jobs.cjs');
+for(const [key,exe] of [['FFMPEG','ffmpeg.exe'],['FFPROBE','ffprobe.exe']])if(!process.env[key])process.env[key]=path.resolve(__dirname,'../../tools/ffmpeg-4.4.1',exe);
+test('browser binary upload through DSH facade creates active playable video, real export and failure cleanup',async()=>{
+ const dir=temp(),store=new ProjectStore(dir),server=createServer(store),jobs=new Jobs(path.join(dir,'renders'),store);require('../src/render-routes.cjs').attach(server,jobs);await new Promise(r=>server.listen(0,'127.0.0.1',r));
+ const routes=[];const {apply}=await import('../src/host/index.js');apply({tools:{register:()=>()=>{}},skills:{register:()=>()=>{}},webServer:{register:r=>(routes.push(r),()=>{})},effect:f=>f()},{adapterUrl:'http://127.0.0.1:'+server.address().port});const facade=require('node:http').createServer(routes[0].handler);await new Promise(r=>facade.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+facade.address().port+'/video-agent';
+ try{
+  const html=await fetch(base+'/');a.equal(html.status,200);a.match(html.headers.get('content-security-policy'),/frame-ancestors 'self'/);a.match(await html.text(),/videoFile/);a.equal((await fetch(base+'/workbench.js')).status,200);
+  const file=path.join(dir,'source.mp4');require('../src/adapters/media.cjs').run(process.env.FFMPEG,['-v','error','-f','lavfi','-i','color=s=64x64:r=24','-t','0.5','-c:v','libx264',file]);
+  const start=Date.now(),r=await fetch(base+'/upload?name='+encodeURIComponent('测试视频'),{method:'POST',body:fs.readFileSync(file)});a.equal(r.status,200,await r.clone().text());const {projectId}=await r.json();a.ok(Date.now()-start<30000);a.equal((await (await fetch(base+'/active')).json()).projectId,projectId);
+  const p=(await (await fetch(base+'/project')).json()).project;a.equal(p.name,'测试视频');a.ok(p.clips.length);a.equal((await fetch(base+'/media?projectId='+projectId+'&assetId='+p.media[0].id,{headers:{Range:'bytes=0-15'}})).status,206);
+  let j=await (await fetch(base+'/render',{method:'POST',body:JSON.stringify({projectId,revision:0,requestId:'upload_export',type:'export'})})).json();for(let i=0;i<100&&['queued','running'].includes(j.status);i++){await new Promise(r=>setTimeout(r,20));j=await (await fetch(base+'/job?id='+j.id)).json();}a.equal(j.status,'succeeded',j.error?.message);a.equal((await fetch(base+'/artifact?id='+j.id+'&name=video.mp4')).status,200);
+  const count=fs.readdirSync(path.join(dir,'uploads')).length;a.equal((await fetch(base+'/upload',{method:'POST',body:'invalid video'})).status,400);a.equal(fs.readdirSync(path.join(dir,'uploads')).length,count);a.equal((await (await fetch(base+'/active')).json()).projectId,projectId);
+ }finally{await new Promise(r=>facade.close(r));await new Promise(r=>server.close(r));store.close();fs.rmSync(dir,{recursive:true,force:true});}
+});

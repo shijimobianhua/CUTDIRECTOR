@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "samples": [
+    {
+      "id": "subtitle-explainer",
+      "request": "转写是什么？",
+      "mustKeep": [],
+      "targetSeconds": null,
+      "notes": "用通俗语言解释并给一个下一步。"
+    },
+    {
+      "id": "speech-30",
+      "request": "将60秒口播保留重点剪成30秒，必须保留售价30元和仅限周末的条件。",
+      "mustKeep": [
+        "30元",
+        "仅限周末"
+      ],
+      "targetSeconds": 30,
+      "notes": "不能删除数字或条件；如必须信息超时长应提出取舍。"
+    },
+    {
+      "id": "change-duration",
+      "request": "把45秒目标改成60秒，其他要求沿用。",
+      "mustKeep": [
+        "60秒"
+      ],
+      "targetSeconds": 60,
+      "notes": "不要改主题、风格或画幅。"
+    },
+    {
+      "id": "reference-honesty",
+      "request": "参考这个vlog学一下。",
+      "mustKeep": [],
+      "targetSeconds": null,
+      "notes": "无实际图片输入时不能声称看懂人物或动作。"
+    },
+    {
+      "id": "preference-override",
+      "request": "这次要舒缓，忽略我平时偏好的快切。",
+      "mustKeep": [
+        "舒缓"
+      ],
+      "targetSeconds": null,
+      "notes": "当前指令优先于已批准偏好；撤销偏好后重跑。"
+    }
+  ]
+}

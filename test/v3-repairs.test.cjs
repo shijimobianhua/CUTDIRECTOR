@@ -1,0 +1,27 @@
+'use strict';
+const assert=require('node:assert/strict'),{test}=require('node:test');
+const {mkdtempSync,rmSync,readFileSync,writeFileSync,unlinkSync,readdirSync}=require('node:fs'),{tmpdir}=require('node:os'),{join}=require('node:path'),{execFileSync}=require('node:child_process'),{Readable}=require('node:stream');
+const {openStore}=require('../src/v3/service/store.cjs'),{ingest}=require('../src/v3/service/media.cjs');
+test('Reconnect restores missing and damaged owned blobs, rejects different content and preserves asset IDs and arrangement history',async t=>{
+ const root=mkdtempSync(join(tmpdir(),'cd-repair-')),store=openStore(root);
+ t.after(()=>{store.close();rmSync(root,{recursive:true,force:true});});
+ const video=join(root,'original.mp4'),other=join(root,'different.mp4');
+ for(const [file,color]of [[video,'red'],[other,'blue']])execFileSync(process.env.FFMPEG||'ffmpeg',['-v','error','-f','lavfi','-i','color=c='+color+':s=160x90:d=2','-c:v','libx264',file],{windowsHide:true});
+ const bytes=readFileSync(video),request=buffer=>Object.assign(Readable.from([buffer]),{headers:{'content-type':'application/octet-stream'}});
+ const p=store.mutate('project',{commandId:'p',kind:'footage',title:'Repair'});
+ const asset=await ingest(request(bytes),root,store,p.id,'asset','original.mp4');
+ store.mutate('arrangement',{commandId:'arrange',projectId:p.id,expectedVersion:0,clips:[{assetId:asset.id,inUs:0,outUs:1000000}]});
+ const before=store.arrangement(p.id),blob=join(root,'media',store.asset(p.id,asset.id).digest);
+ unlinkSync(blob);
+ const repaired=await ingest(request(bytes),root,store.repairs.ingestStore(p.id,asset.id),p.id,'repair','original.mp4');
+ assert.equal(repaired.id,asset.id);assert.deepEqual(readFileSync(blob),bytes);
+ assert.deepEqual(store.arrangement(p.id),before);
+ assert.deepEqual(await ingest(request(bytes),root,store.repairs.ingestStore(p.id,asset.id),p.id,'repair','original.mp4'),repaired);
+ await assert.rejects(ingest(request(readFileSync(other)),root,store.repairs.ingestStore(p.id,asset.id),p.id,'wrong','original.mp4'),{code:'RECONNECT_DIFFERENT_FILE'});
+ assert.deepEqual(readFileSync(blob),bytes);
+ writeFileSync(blob,'damaged');
+ await ingest(request(bytes),root,store.repairs.ingestStore(p.id,asset.id),p.id,'repair2','original.mp4');
+ assert.deepEqual(readFileSync(blob),bytes);
+ assert.equal(readdirSync(join(root,'repair-backups')).length,1);
+ assert.deepEqual(store.arrangement(p.id),before);assert.equal(store.projectAssets(p.id).length,1);
+});

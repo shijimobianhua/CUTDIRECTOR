@@ -1,0 +1,60 @@
+# 真实媒体与派生文件不入库：M0 只提交路径、hash 与元数据
+test/fixtures/**/*.mp4
+test/fixtures/**/*.mov
+test/fixtures/**/*.m4v
+test/fixtures/**/*.mkv
+test/fixtures/**/*.avi
+test/fixtures/**/*.webm
+test/fixtures/**/*.wmv
+test/fixtures/**/*.m4a
+test/fixtures/**/*.wav
+test/fixtures/**/*.aac
+test/fixtures/**/*.flac
+test/fixtures/**/*.mp3
+test/fixtures/**/*.srt
+test/fixtures/**/*.ass
+test/fixtures/**/*.vtt
+
+# 临时文件与未完成产物
+*.partial
+.partial/
+*.tmp
+*.tmp.*
+.g0-data/
+.m1-data/
+.m2-data/
+.m3-data/
+.ui-data/
+
+# 依赖与构建
+node_modules/
+dist/
+build/
+out/
+
+# 本地环境与凭据
+.env
+.env.*
+!.env.example
+*.local
+
+# 回收区：WorkBuddy/Codex 产物与第三方源码快照，不提交
+回收/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Standalone studio design verification (temporary)
+.design-data/
+
+# Private runtime data, credentials and design/browser caches
+.v3-data/
+.impeccable/
+.taste-skill/
+outputs/
+*.sqlite*
+*.db
+.credentials*
+auth.json

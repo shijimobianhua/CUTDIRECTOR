@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "platform": "win32-x64",
+  "ffmpeg": {
+    "version": "9.0.2",
+    "archive": "ffmpeg-9.0.2-essentials_build.zip",
+    "url": "https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-9.0.2-essentials_build.zip",
+    "mirror": "https://github.com/GyanD/codexffmpeg/releases/download/9.0.2/ffmpeg-9.0.2-essentials_build.zip",
+    "sha256": "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba",
+    "source": "https://github.com/FFmpeg/FFmpeg/commit/946fcce07b",
+    "license": "GPL-3.0-or-later; see upstream build notices"
+  },
+  "python": {
+    "version": "3.14.10",
+    "archive": "python-3.14.10-embed-amd64.zip",
+    "url": "https://www.python.org/ftp/python/3.14.10/python-3.14.10-embed-amd64.zip",
+    "sha256": "90905e64a840557d8c1bc4f5b74db3d7ee85e3ffb217611cac1c7813acea4159",
+    "source": "https://www.python.org/downloads/release/python-31410/",
+    "license": "PSF-2.0 and bundled dependency notices"
+  }
+}

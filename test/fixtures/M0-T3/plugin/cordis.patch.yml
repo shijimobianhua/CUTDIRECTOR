@@ -1,0 +1,6 @@
+- insert:
+    - id: video-m0t3
+      name: '@local/video-m0t3'
+      config:
+        adapterUrl: http://127.0.0.1:7792
+        projectId: P

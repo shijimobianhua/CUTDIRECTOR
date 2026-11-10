@@ -1,0 +1,28 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const {mkdtempSync,rmSync}=require('node:fs'),{tmpdir}=require('node:os'),{join}=require('node:path'),{pathToFileURL}=require('node:url');
+const {openStore}=require('../src/v3/service/store.cjs'),{build}=require('../tools/package-v3.cjs');
+const {reference,policy}=require('../src/v3/service/director-policy.cjs');
+test('Director policy is packaged, supplied to fixed-model requests and recorded in immutable turn context',async t=>{
+ const root=mkdtempSync(join(tmpdir(),'cd-policy-'));let store=openStore(join(root,'data'));
+ t.after(()=>{store.close();rmSync(root,{recursive:true,force:true});});
+ const project=store.mutate('project',{commandId:'p',title:'策略验收',kind:'idea'}),chat=store.chat.open(project.id,{commandId:'chat'});
+ const turn=store.chat.start(project.id,chat.id,{commandId:'turn',text:'我想做一个旅行故事开场，帮我想一个简单的方案',model:{provider:'fixture',id:'text'}});
+ assert.deepEqual(turn.context.policy,reference);
+ const pkg=build(join(root,'plugin'),join(root,'unused')),{respond}=await import(pathToFileURL(join(pkg,'host/director.js')).href);
+ let sent;
+ const ctx={get:()=>({listProviders:async()=>[{id:'fixture'}],listModels:async()=>[{id:'text'}],async *stream(request){sent=request;
+   yield {type:'text-delta',text:'先用一张到达目的地的画面开场。'};yield {type:'finish',reason:'stop'};
+ }})};
+ const reply=await respond(ctx,turn);
+ assert.equal(reply.text,'先用一张到达目的地的画面开场。');
+ const prompt=sent.messages[0].content[0].text;
+ for(const rule of policy.rules)assert.ok(prompt.includes(rule));
+ assert.match(prompt,/不是当前工程的事实/);
+ assert.equal(sent.provider,'fixture');assert.equal(sent.model,'text');
+ store.chat.finish(project.id,chat.id,{turnId:turn.turnId,...reply});
+ store.close();store=openStore(join(root,'data'));
+ const history=store.chat.turns(project.id,chat.id);
+ assert.deepEqual(history[0].context.policy,reference);
+ assert.match(reference.digest,/^[a-f0-9]{64}$/);assert.ok(Object.isFrozen(policy.rules));
+});

@@ -1,0 +1,22 @@
+'use strict';
+const assert=require('node:assert/strict'),{test}=require('node:test'),{mkdtempSync,rmSync}=require('node:fs'),{tmpdir}=require('node:os'),{join}=require('node:path'),{randomUUID}=require('node:crypto');
+const {openStore}=require('../src/v3/service/store.cjs');
+test('Long subtitle context pages are admitted sequentially and only read evidence can enter a grouped cut proposal',t=>{
+ const root=mkdtempSync(join(tmpdir(),'cd-long-context-')),s=openStore(root);t.after(()=>{s.close();rmSync(root,{recursive:true,force:true});});
+ const p=s.mutate('project',{commandId:'p',kind:'footage',title:'Long'});
+ const asset=s.mutate('asset',{commandId:'asset',projectId:p.id,digest:'a'.repeat(64),name:'long.mp4',size:1,durationUs:400000000,width:160,height:90,contentType:'video/mp4'},()=>{});
+ const stamp=n=>'00:'+String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')+',000';
+ const text=Array.from({length:400},(_,i)=>(i+1)+'\n'+stamp(i)+' --> '+stamp(i+1)+'\n美丽的风景').join('\n\n');
+ s.mutate('arrangement',{commandId:'arr',projectId:p.id,expectedVersion:0,clips:[{assetId:asset.id,inUs:0,outUs:400000000}],subtitle:{mode:'timeline',text,assetId:null}});
+ const chat=s.chat.open(p.id,{commandId:randomUUID()}),turn=s.chat.start(p.id,chat.id,{commandId:'request',text:'保留重点剪成100秒',includeSubtitles:true,model:{provider:'fixture',id:'text'}});
+ assert.equal(turn.context.cutEvidence.items.length,200);assert.equal(turn.context.cutEvidence.complete,false);
+ s.runtime.begin(p.id,chat.id,turn.turnId);
+ assert.throws(()=>s.runtime.read(p.id,chat.id,turn.turnId,{tool:'read-subtitles',after:300}),{code:'RUN_TOOL_FORBIDDEN'});
+ s.runtime.begin(p.id,chat.id,turn.turnId);
+ const page=s.runtime.read(p.id,chat.id,turn.turnId,{tool:'read-subtitles',after:200});
+ assert.equal(page.items.length,200);assert.equal(page.complete,true);assert.equal(page.nextAfter,400);
+ s.runtime.finish(p.id,chat.id,turn.turnId);
+ const rows=s.chat.finish(p.id,chat.id,{turnId:turn.turnId,text:'请检查前100秒的风景。',proposal:{kind:'arrangement',targetSeconds:100,keep:[{fromCue:1,toCue:100,reason:'保留这一段景色'}]}});
+ assert.equal(rows[0].proposal.kind,'arrangement');assert.equal(rows[0].proposal.draft.keep.length,100);
+ assert.equal(s.arrangement(p.id).version,1);
+});

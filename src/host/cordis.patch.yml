@@ -1,0 +1,6 @@
+- insert:
+    - id: video-agent
+      name: '@local/video-agent'
+      config:
+        adapterUrl: http://127.0.0.1:7793
+        projectId: P

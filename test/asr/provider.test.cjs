@@ -1,0 +1,12 @@
+const {test}=require('node:test');const a=require('node:assert/strict');const fs=require('node:fs'),path=require('node:path');const {temp}=require('../helpers.cjs');const {hash}=require('../../src/core/util.cjs');const {UnavailableProvider,FixtureProvider,validateTranscript,transcribe}=require('../../src/adapters/asr/index.cjs');
+function sample(){const dir=temp(),media=path.join(dir,'fixture-audio.bin');fs.writeFileSync(media,'synthetic unit test bytes, not audio');const asset={id:'A',path:media,hash:hash(fs.readFileSync(media)),durationUs:3000000,hasAudio:true};
+ const transcript={id:'T',assetId:'A',model:'synthetic-test-only',language:'zh',precision:'sentence',timeUnit:'microseconds',timeReference:'asset-origin',words:[{id:'W1',text:'张三在2026年说：不是三十，是十三。',startUs:100000,endUs:2000000,confidence:null}],missing:[{startUs:2000000,endUs:3000000,reason:'test missing coverage'}],uncertain:[{wordId:'W1',reason:'test uncertain entity'}]};return {dir,asset,transcript};}
+test('unavailable model returns explicit provider-not-ready without invented transcript',async()=>{
+ const {asset}=sample();a.equal(new UnavailableProvider().readiness().status,'provider-not-ready');await a.rejects(()=>transcribe(asset),{code:'PROVIDER_NOT_READY'});await a.rejects(()=>transcribe({...asset,hasAudio:false}),{code:'ASR_NO_AUDIO'});
+});
+test('explicit fixture replay preserves entities, numbers, negation, precision and uncertainty; bound to asset hash',async()=>{
+ const {dir,asset,transcript}=sample(),file=path.join(dir,'asr-fixture.json');const fixture={fixtureVersion:1,assetHash:asset.hash,provenance:{kind:'synthetic-test',source:'Unit test; not model output or real transcription'},transcript};fs.writeFileSync(file,JSON.stringify(fixture));
+ const result=await transcribe(asset,{provider:new FixtureProvider(file)});a.equal(result.status,'fixture-replay');a.equal(result.realTranscription,false);a.deepEqual(result.transcript,transcript);a.equal(result.transcript.precision,'sentence');
+ fixture.assetHash='0'.repeat(64);fs.writeFileSync(file,JSON.stringify(fixture));await a.rejects(()=>transcribe(asset,{provider:new FixtureProvider(file)}),{code:'MEDIA_CHANGED'});
+ for(const mutate of [t=>t.words[0].startUs=-1,t=>t.words[0].endUs=4000000,t=>delete t.missing,t=>t.uncertain[0].wordId='absent',t=>t.words[0].confidence=2]){const t=structuredClone(transcript);mutate(t);a.throws(()=>validateTranscript(t,asset),{code:'ASR_INVALID'});}
+});

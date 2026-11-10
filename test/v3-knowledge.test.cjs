@@ -1,0 +1,28 @@
+'use strict';
+const assert=require('node:assert/strict'),{test}=require('node:test');
+const {mkdtempSync,rmSync}=require('node:fs'),{tmpdir}=require('node:os'),{join}=require('node:path'),{randomUUID}=require('node:crypto');
+const {openStore}=require('../src/v3/service/store.cjs');
+test('Feedback is inert until explicit approval, remains scoped, promotes explicitly and revokes durably',t=>{
+  const root=mkdtempSync(join(tmpdir(),'cd-knowledge-'));let store=openStore(root);
+  t.after(()=>{store.close();rmSync(root,{recursive:true,force:true});});
+  const a=store.mutate('project',{commandId:'a',kind:'idea',title:'A'}),b=store.mutate('project',{commandId:'b',kind:'idea',title:'B'});
+  store.mutate('story',{commandId:'s',projectId:a.id,expectedVersion:0,brief:'A',ratio:'9:16',durationUs:10000000,shots:[]});
+  const entry=store.knowledge.add(a.id,{commandId:'f',kind:'story',version:1,note:'节奏慢一点，保留说话人的条件'});
+  assert.deepEqual(store.knowledge.context(a.id),[]);assert.deepEqual(store.knowledge.context(b.id),[]);
+  assert.throws(()=>store.knowledge.change(a.id,entry.id,{commandId:'bad',expectedVersion:1,action:'approve'}),{code:'PREFERENCE_APPROVAL_REQUIRED'});
+  const approved=store.knowledge.change(a.id,entry.id,{commandId:'approve',expectedVersion:1,action:'approve',confirm:true});
+  assert.equal(approved.version,2);assert.equal(store.knowledge.context(a.id)[0].rule,entry.note);
+  assert.deepEqual(store.knowledge.context(b.id),[]);
+  assert.throws(()=>store.knowledge.change(b.id,entry.id,{commandId:'foreign',expectedVersion:2,action:'promote',confirm:true}),{code:'FEEDBACK_NOT_FOUND'});
+  store.knowledge.change(a.id,entry.id,{commandId:'promote',expectedVersion:2,action:'promote',confirm:true});
+  const chat=store.chat.open(b.id,{commandId:randomUUID()});
+  const turn=store.chat.start(b.id,chat.id,{commandId:randomUUID(),text:'这次节奏快一点',model:{provider:'fixture',id:'text'}});
+  assert.equal(turn.context.preferences[0].rule,entry.note);
+  assert.equal(turn.text,'这次节奏快一点');
+  store.chat.finish(b.id,chat.id,{turnId:turn.turnId,text:'本次按新的节奏建议'});
+  store.knowledge.change(a.id,entry.id,{commandId:'revoke',expectedVersion:3,action:'revoke',confirm:true});
+  assert.deepEqual(store.knowledge.context(b.id),[]);
+  store.close();store=openStore(root);
+  assert.equal(store.knowledge.list(a.id)[0].state,'revoked');
+  assert.deepEqual(store.knowledge.context(a.id),[]);
+});
