@@ -1,0 +1,60 @@
+{
+  "version": "0.3.0-preview.7",
+  "capturedAt": "2026-11-10T07:58:28.832Z",
+  "userDate": "2026-11-10",
+  "source": "Authenticated DSH-host iframe preview using actual current source and isolated synthetic demo data",
+  "data": "Synthetic demo: rain-after station reunion and city walk ideas; no personal projects or credentials",
+  "modelCalls": 0,
+  "paidCalls": 0,
+  "browserErrors": [],
+  "images": [
+    {
+      "file": "01-workbench.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a97ab94cf303ae5ca2896ce7c9bf3442eccd813e74c82e65cb2846638124c0b1"
+    },
+    {
+      "file": "02-ideas.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1b089a7df8df29686ddb7ff3c8c147818ceba51e62732b268db6cb8effb1b251"
+    },
+    {
+      "file": "03-assistant.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7126257e66471b93e779b8590af08d7b4354dc52365e5e6847b465ce3aad39ac"
+    },
+    {
+      "file": "04-script.png",
+      "width": 1440,
+      "height": 1250,
+      "sha256": "ca4ea323ef3ff492aef34b396ee85af86a42308413106205f67a83f5670421dc"
+    },
+    {
+      "file": "05-storyboard.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b76a1113a0a378935fce1610328cb25572692a636106dc94fef1aeeb2e945e7b"
+    },
+    {
+      "file": "06-canvas.png",
+      "width": 1440,
+      "height": 1300,
+      "sha256": "e64fc47f73875c3199acf58012ef4c4f6b58917c363b623047c759361a3b95a8"
+    },
+    {
+      "file": "07-connect-service.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e9251361aa66b13b6a058cc0d0e711e97a0c5fcb60f0916ec9b6e3fb5352cbfd"
+    },
+    {
+      "file": "08-script-narrow.png",
+      "width": 390,
+      "height": 900,
+      "sha256": "7ec0cadc9c9b7d4675f3afecd77cf64d1fd2ad2a060988e36ad128e3ce3ff9e9"
+    }
+  ]
+}
